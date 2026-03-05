@@ -1,0 +1,15 @@
+@Library('olcne-pipeline')
+import com.oracle.olcne.pipeline.BranchPattern
+
+String version = "{{{ .major }}}.{{{ .minor }}}.{{{ .patch }}}"
+String imageTag = "v" + version
+String registry = "container-registry.oracle.com/olcne"
+String imageName = "cluster-api-provider-vsphere"
+
+imagePipeline(
+  branchPattern: new BranchPattern(master: 'oracle/release/.*', feature: '(?!^release/.*$)(^.*$)'),
+  containers: [(registry + '/' + imageName + ':' + imageTag): (registry + '/' + imageName + ':' + imageTag)],
+  architectures: ['x86_64', 'aarch64'],
+  platforms: ['ol9'],
+  buildScript: "sh olm/build-image.sh"
+)
